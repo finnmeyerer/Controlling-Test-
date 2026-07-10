@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Lernquiz – 15-Fragen-Modus</title>
+  <title>Lernquiz – Übungsmodus und Prüfungsmodus</title>
   <style>
     :root {
       --bg: #f6f7fb;
@@ -32,139 +32,97 @@
       justify-content: center;
       padding: 24px;
     }
-    .app { width: 100%; max-width: 900px; }
-    .topbar {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      align-items: center;
-      margin-bottom: 16px;
-      flex-wrap: wrap;
-    }
-    h1 { margin: 0; font-size: clamp(26px, 4vw, 40px); letter-spacing: -0.04em; }
-    .score { color: var(--muted); font-weight: 700; }
-    .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 24px;
-      box-shadow: 0 18px 55px rgba(31, 39, 64, 0.10);
-      padding: clamp(20px, 4vw, 34px);
-    }
+    .app { width: 100%; max-width: 960px; }
+    .topbar { display: flex; justify-content: space-between; gap: 12px; align-items: center; margin-bottom: 16px; }
+    h1 { margin: 0; font-size: clamp(28px, 4vw, 44px); letter-spacing: -0.04em; }
+    .score { color: var(--muted); font-weight: 650; text-align: right; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 28px; padding: clamp(20px, 4vw, 34px); box-shadow: 0 20px 60px rgba(20, 30, 55, 0.10); }
     .meta { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
-    .pill {
-      background: #f0f3fa;
-      color: var(--muted);
-      padding: 7px 10px;
-      border-radius: 999px;
-      font-size: 13px;
-      font-weight: 700;
-    }
-    .question-title { color: var(--muted); font-weight: 700; margin-bottom: 14px; }
-    .statement { font-size: clamp(21px, 3vw, 30px); line-height: 1.25; font-weight: 750; margin: 0 0 24px; }
-    .buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    button {
-      border: 0;
-      border-radius: 16px;
-      padding: 15px 18px;
-      font-size: 17px;
-      font-weight: 750;
-      cursor: pointer;
-      transition: transform .08s ease, background .12s ease, opacity .12s ease;
-    }
-    button:hover { transform: translateY(-1px); }
-    button:disabled { cursor: not-allowed; opacity: .65; transform: none; }
-    .true-btn { background: #eaf8ef; color: var(--green); }
-    .false-btn { background: #fdeaea; color: var(--red); }
+    .pill { background: #f0f3fa; border: 1px solid var(--border); color: var(--muted); border-radius: 999px; padding: 8px 12px; font-size: 14px; font-weight: 650; }
+    .statement { font-size: clamp(22px, 4vw, 34px); line-height: 1.18; font-weight: 800; letter-spacing: -0.03em; margin: 16px 0 22px; }
+    .question-title { color: var(--muted); font-weight: 750; margin-bottom: 8px; }
+    .small { color: var(--muted); font-size: 14px; margin-top: 14px; line-height: 1.45; }
+    .mode-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 20px; }
+    .mode-card { border: 1px solid var(--border); border-radius: 20px; padding: 18px; background: #fbfcff; }
+    .mode-card h2 { margin: 0 0 8px; font-size: 22px; }
+    label { display: block; font-weight: 750; margin: 16px 0 8px; }
+    select { width: 100%; padding: 12px 14px; border-radius: 14px; border: 1px solid var(--border); background: white; color: var(--text); font-weight: 650; }
+    button { border: 0; border-radius: 16px; padding: 15px 18px; font-size: 16px; font-weight: 800; cursor: pointer; transition: 0.15s ease; }
+    button:disabled { opacity: 0.55; cursor: not-allowed; }
     .start-btn, .next-btn, .reset-btn { background: var(--primary); color: white; width: 100%; margin-top: 14px; }
     .start-btn:hover, .next-btn:hover, .reset-btn:hover { background: var(--primary-dark); }
-    .feedback { display: none; margin-top: 20px; border-radius: 18px; padding: 16px; font-weight: 700; }
+    .secondary-btn { background: #f0f3fa; color: var(--text); width: 100%; margin-top: 10px; }
+    .buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
+    .true-btn { background: var(--green-bg); color: var(--green); }
+    .false-btn { background: var(--red-bg); color: var(--red); }
+    .feedback { margin-top: 18px; border-radius: 18px; padding: 14px 16px; font-weight: 750; display: none; }
     .feedback.correct { display: block; background: var(--green-bg); color: var(--green); }
     .feedback.wrong { display: block; background: var(--red-bg); color: var(--red); }
-    .correction {
-      display: none;
-      margin-top: 12px;
-      background: var(--orange-bg);
-      color: var(--orange);
-      border: 1px solid #ffdf9a;
-      border-radius: 18px;
-      padding: 16px;
-      line-height: 1.45;
-    }
+    .correction { display: none; margin-top: 12px; background: var(--orange-bg); color: var(--orange); border-radius: 18px; padding: 14px 16px; line-height: 1.45; }
     .correction strong { display: block; margin-bottom: 6px; }
-    .settings { margin-top: 16px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
-    select {
-      flex: 1;
-      min-width: 230px;
-      border: 1px solid var(--border);
-      background: white;
-      border-radius: 14px;
-      padding: 12px;
-      font-weight: 650;
-      color: var(--text);
-    }
-    .small { color: var(--muted); font-size: 14px; margin-top: 14px; line-height: 1.4; }
-    .result-box {
-      display: none;
-      background: #f0f3fa;
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 22px;
-      margin-top: 18px;
-    }
+    .result-box { display: none; background: #f0f3fa; border: 1px solid var(--border); border-radius: 20px; padding: 22px; margin-top: 18px; }
     .result-box h2 { margin: 0 0 10px; font-size: 28px; }
     .big-result { font-size: clamp(28px, 6vw, 54px); font-weight: 850; letter-spacing: -0.04em; margin: 8px 0; }
     .hidden { display: none !important; }
-    @media (max-width: 620px) { .buttons { grid-template-columns: 1fr; } }
+    @media (max-width: 720px) { .mode-grid, .buttons { grid-template-columns: 1fr; } .topbar { align-items: flex-start; flex-direction: column; } .score { text-align: left; } }
   </style>
 </head>
 <body>
   <main class="app">
     <div class="topbar">
       <h1>Lernquiz</h1>
-      <div class="score" id="score">Noch nicht gestartet</div>
+      <div class="score" id="score">Modus auswählen</div>
     </div>
 
     <section class="card">
       <div class="meta">
-        <span class="pill" id="lsk">15-Fragen-Modus</span>
-        <span class="pill" id="counter">0 / 15</span>
-        <span class="pill" id="points">0 / 30 Punkte</span>
+        <span class="pill" id="modePill">Start</span>
+        <span class="pill" id="lsk">Alle Kapitel</span>
+        <span class="pill" id="counter">0 / 0</span>
+        <span class="pill" id="points">0 Punkte</span>
       </div>
 
       <div id="intro">
-        <p class="statement">Starte eine neue Runde mit 15 zufälligen Aussagen.</p>
-        <p class="small">Jede richtige Antwort gibt 2 Punkte. Am Ende siehst du deine Punktzahl und die Uni-Note.</p>
-        <button class="start-btn" id="startBtn">Start</button>
+        <p class="statement">Wähle deinen Modus.</p>
+        <div class="mode-grid">
+          <div class="mode-card">
+            <h2>Freier Modus</h2>
+            <p class="small">Wähle ein Kapitel und gehe alle Aussagen dieses Kapitels nacheinander durch. Ohne Punkte und ohne Note.</p>
+            <label for="practiceFilter">Kapitel auswählen</label>
+            <select id="practiceFilter"></select>
+            <button class="start-btn" id="practiceStartBtn">Freien Modus starten</button>
+          </div>
+          <div class="mode-card">
+            <h2>15-Fragen-Modus</h2>
+            <p class="small">Wie bisher: 15 zufällige Aussagen aus allen Kapiteln. Jede richtige Antwort gibt 2 Punkte. Am Ende bekommst du Punktzahl und Uni-Note.</p>
+            <button class="start-btn" id="examStartBtn">15-Fragen-Modus starten</button>
+          </div>
+        </div>
       </div>
 
       <div id="quizArea" class="hidden">
         <div class="question-title" id="questionTitle"></div>
         <p class="statement" id="statement"></p>
-
         <div class="buttons">
           <button class="true-btn" id="trueBtn">Richtig</button>
           <button class="false-btn" id="falseBtn">Falsch</button>
         </div>
-
         <div class="feedback" id="feedback"></div>
         <div class="correction" id="correction"></div>
         <button class="next-btn" id="nextBtn" style="display:none;">Nächste Frage</button>
+        <button class="secondary-btn" id="backBtn">Zur Modusauswahl</button>
       </div>
 
       <div class="result-box" id="resultBox">
-        <h2>Ergebnis</h2>
+        <h2 id="resultTitle">Ergebnis</h2>
         <div class="big-result" id="finalPoints"></div>
         <p id="finalGrade"></p>
         <p class="small" id="finalDetails"></p>
-        <button class="start-btn" id="restartBtn">Neue Runde starten</button>
+        <button class="start-btn" id="restartExamBtn">Neue 15-Fragen-Runde starten</button>
+        <button class="secondary-btn" id="homeBtn">Zur Modusauswahl</button>
       </div>
     </section>
-
-    <div class="settings">
-      <select id="filter"></select>
-      <button class="reset-btn" id="resetBtn" style="max-width:220px; margin-top:0;">Neue Runde</button>
-    </div>
-    <div class="small">Tipp: Du kannst die Fragen unten im Code im Bereich <strong>const questions</strong> ergänzen oder ändern.</div>
+    <div class="small">Freier Modus = Kapitel gezielt üben. 15-Fragen-Modus = zufällige Prüfungssimulation aus allen Kapiteln.</div>
   </main>
 
   <script>
@@ -174,6 +132,7 @@
     const POINTS_PER_CORRECT = 2;
     const MAX_POINTS = QUESTIONS_PER_ROUND * POINTS_PER_CORRECT;
 
+    let currentMode = null; // 'practice' oder 'exam'
     let roundQuestions = [];
     let currentIndex = 0;
     let correctCount = 0;
@@ -182,6 +141,7 @@
     let currentQuestion = null;
     let roundActive = false;
 
+    const modePillEl = document.getElementById('modePill');
     const lskEl = document.getElementById('lsk');
     const counterEl = document.getElementById('counter');
     const pointsEl = document.getElementById('points');
@@ -192,30 +152,37 @@
     const trueBtn = document.getElementById('trueBtn');
     const falseBtn = document.getElementById('falseBtn');
     const nextBtn = document.getElementById('nextBtn');
-    const startBtn = document.getElementById('startBtn');
-    const restartBtn = document.getElementById('restartBtn');
-    const resetBtn = document.getElementById('resetBtn');
+    const backBtn = document.getElementById('backBtn');
+    const practiceStartBtn = document.getElementById('practiceStartBtn');
+    const examStartBtn = document.getElementById('examStartBtn');
+    const restartExamBtn = document.getElementById('restartExamBtn');
+    const homeBtn = document.getElementById('homeBtn');
     const scoreEl = document.getElementById('score');
-    const filterEl = document.getElementById('filter');
+    const practiceFilterEl = document.getElementById('practiceFilter');
     const introEl = document.getElementById('intro');
     const quizAreaEl = document.getElementById('quizArea');
     const resultBoxEl = document.getElementById('resultBox');
+    const resultTitleEl = document.getElementById('resultTitle');
     const finalPointsEl = document.getElementById('finalPoints');
     const finalGradeEl = document.getElementById('finalGrade');
     const finalDetailsEl = document.getElementById('finalDetails');
 
+    function shortLskName(fullName) {
+      return fullName.replace(/ – Bewertung:.*/, '');
+    }
+
     function uniqueLskNames() {
-      return [...new Set(questions.map(q => q.lsk.replace(/ – Bewertung:.*/, '')))];
+      return [...new Set(questions.map(q => shortLskName(q.lsk)))];
     }
 
-    function setupFilter() {
-      filterEl.innerHTML = '<option value="alle">Alle Lernstandskontrollen</option>' +
-        uniqueLskNames().map(name => `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`).join('');
+    function setupPracticeFilter() {
+      practiceFilterEl.innerHTML = uniqueLskNames()
+        .map(name => `<option value="${escapeHtml(name)}">${escapeHtml(name)} (${questions.filter(q => q.lsk.startsWith(name)).length} Aussagen)</option>`)
+        .join('');
     }
 
-    function getFilteredQuestions() {
-      const selected = filterEl.value;
-      if (selected === 'alle') return questions;
+    function getPracticeQuestions() {
+      const selected = practiceFilterEl.value;
       return questions.filter(q => q.lsk.startsWith(selected));
     }
 
@@ -228,15 +195,10 @@
       return copy;
     }
 
-    function startRound() {
-      const pool = getFilteredQuestions();
-      roundQuestions = shuffle(pool).slice(0, QUESTIONS_PER_ROUND);
-      currentIndex = 0;
-      correctCount = 0;
-      wrongCount = 0;
-      points = 0;
-      roundActive = true;
-
+    function startPracticeMode() {
+      currentMode = 'practice';
+      roundQuestions = getPracticeQuestions();
+      resetRoundState();
       introEl.classList.add('hidden');
       resultBoxEl.style.display = 'none';
       quizAreaEl.classList.remove('hidden');
@@ -244,11 +206,33 @@
       updateScore();
     }
 
+    function startExamMode() {
+      currentMode = 'exam';
+      roundQuestions = shuffle(questions).slice(0, QUESTIONS_PER_ROUND);
+      resetRoundState();
+      introEl.classList.add('hidden');
+      resultBoxEl.style.display = 'none';
+      quizAreaEl.classList.remove('hidden');
+      showQuestion();
+      updateScore();
+    }
+
+    function resetRoundState() {
+      currentIndex = 0;
+      correctCount = 0;
+      wrongCount = 0;
+      points = 0;
+      currentQuestion = null;
+      roundActive = true;
+    }
+
     function showQuestion() {
       currentQuestion = roundQuestions[currentIndex];
-      lskEl.textContent = currentQuestion.lsk.replace(/ – Bewertung:.*/, '');
-      counterEl.textContent = `Frage ${currentIndex + 1} / ${QUESTIONS_PER_ROUND}`;
-      pointsEl.textContent = `${points} / ${MAX_POINTS} Punkte`;
+      const total = currentMode === 'exam' ? QUESTIONS_PER_ROUND : roundQuestions.length;
+      modePillEl.textContent = currentMode === 'exam' ? '15-Fragen-Modus' : 'Freier Modus';
+      lskEl.textContent = currentMode === 'exam' ? shortLskName(currentQuestion.lsk) : practiceFilterEl.value;
+      counterEl.textContent = `Frage ${currentIndex + 1} / ${total}`;
+      pointsEl.textContent = currentMode === 'exam' ? `${points} / ${MAX_POINTS} Punkte` : 'ohne Bewertung';
       questionTitleEl.textContent = currentQuestion.frage;
       statementEl.textContent = currentQuestion.aussage;
       feedbackEl.className = 'feedback';
@@ -258,26 +242,24 @@
       trueBtn.disabled = false;
       falseBtn.disabled = false;
       nextBtn.style.display = 'none';
-      nextBtn.textContent = currentIndex === QUESTIONS_PER_ROUND - 1 ? 'Ergebnis anzeigen' : 'Nächste Frage';
+      nextBtn.textContent = currentIndex === total - 1 ? (currentMode === 'exam' ? 'Ergebnis anzeigen' : 'Übung beenden') : 'Nächste Frage';
     }
 
     function answer(userSaysTrue) {
       if (!roundActive || !currentQuestion) return;
-
       const isCorrect = userSaysTrue === currentQuestion.richtig;
+
       if (isCorrect) {
         correctCount++;
-        points += POINTS_PER_CORRECT;
+        if (currentMode === 'exam') points += POINTS_PER_CORRECT;
         feedbackEl.className = 'feedback correct';
-        feedbackEl.textContent = `Korrekt! +${POINTS_PER_CORRECT} Punkte`;
+        feedbackEl.textContent = currentMode === 'exam' ? `Korrekt! +${POINTS_PER_CORRECT} Punkte` : 'Korrekt!';
       } else {
         wrongCount++;
         feedbackEl.className = 'feedback wrong';
         feedbackEl.textContent = `Leider falsch. Die Aussage ist ${currentQuestion.richtig ? 'richtig' : 'falsch'}.`;
       }
 
-      // Wenn die Aussage selbst falsch ist, wird die Verbesserung immer eingeblendet.
-      // Also auch dann, wenn du richtigerweise "Falsch" geklickt hast.
       if (!currentQuestion.richtig && currentQuestion.korrektur) {
         correctionEl.style.display = 'block';
         correctionEl.innerHTML = `<strong>Verbesserung:</strong>${escapeHtml(currentQuestion.korrektur)}`;
@@ -290,7 +272,8 @@
     }
 
     function nextQuestion() {
-      if (currentIndex < QUESTIONS_PER_ROUND - 1) {
+      const total = currentMode === 'exam' ? QUESTIONS_PER_ROUND : roundQuestions.length;
+      if (currentIndex < total - 1) {
         currentIndex++;
         showQuestion();
       } else {
@@ -317,24 +300,50 @@
       roundActive = false;
       quizAreaEl.classList.add('hidden');
       resultBoxEl.style.display = 'block';
-      lskEl.textContent = 'Runde beendet';
-      counterEl.textContent = `${QUESTIONS_PER_ROUND} / ${QUESTIONS_PER_ROUND}`;
-      pointsEl.textContent = `${points} / ${MAX_POINTS} Punkte`;
-      scoreEl.textContent = `${correctCount} richtig · ${wrongCount} falsch`;
 
-      const grade = gradeFromPoints(points);
-      const percent = Math.round((points / MAX_POINTS) * 100);
-      finalPointsEl.textContent = `${points} / ${MAX_POINTS} Punkte`;
-      finalGradeEl.innerHTML = `<strong>Uni-Note: ${grade}</strong>`;
-      finalDetailsEl.textContent = `${correctCount} von ${QUESTIONS_PER_ROUND} Fragen richtig (${percent} %).`;
+      if (currentMode === 'exam') {
+        modePillEl.textContent = '15-Fragen-Modus beendet';
+        lskEl.textContent = 'Alle Kapitel';
+        counterEl.textContent = `${QUESTIONS_PER_ROUND} / ${QUESTIONS_PER_ROUND}`;
+        pointsEl.textContent = `${points} / ${MAX_POINTS} Punkte`;
+        scoreEl.textContent = `${correctCount} richtig · ${wrongCount} falsch`;
+        const grade = gradeFromPoints(points);
+        const percent = Math.round((points / MAX_POINTS) * 100);
+        resultTitleEl.textContent = 'Ergebnis';
+        finalPointsEl.textContent = `${points} / ${MAX_POINTS} Punkte`;
+        finalGradeEl.innerHTML = `<strong>Uni-Note: ${grade}</strong>`;
+        finalDetailsEl.textContent = `${correctCount} von ${QUESTIONS_PER_ROUND} Fragen richtig (${percent} %).`;
+        restartExamBtn.style.display = 'block';
+      } else {
+        const total = roundQuestions.length;
+        modePillEl.textContent = 'Freier Modus beendet';
+        lskEl.textContent = practiceFilterEl.value;
+        counterEl.textContent = `${total} / ${total}`;
+        pointsEl.textContent = 'ohne Bewertung';
+        scoreEl.textContent = `${correctCount} richtig · ${wrongCount} falsch`;
+        resultTitleEl.textContent = 'Übung beendet';
+        finalPointsEl.textContent = `${correctCount} / ${total} richtig`;
+        finalGradeEl.innerHTML = '<strong>Keine Notenbewertung im freien Modus.</strong>';
+        finalDetailsEl.textContent = `Du hast alle Aussagen aus ${practiceFilterEl.value} geübt.`;
+        restartExamBtn.style.display = 'none';
+      }
     }
 
     function updateScore() {
-      scoreEl.textContent = `${correctCount} richtig · ${wrongCount} falsch`;
-      pointsEl.textContent = `${points} / ${MAX_POINTS} Punkte`;
+      if (currentMode === 'exam') {
+        scoreEl.textContent = `${correctCount} richtig · ${wrongCount} falsch`;
+        pointsEl.textContent = `${points} / ${MAX_POINTS} Punkte`;
+      } else if (currentMode === 'practice') {
+        scoreEl.textContent = `${correctCount} richtig · ${wrongCount} falsch`;
+        pointsEl.textContent = 'ohne Bewertung';
+      } else {
+        scoreEl.textContent = 'Modus auswählen';
+        pointsEl.textContent = '0 Punkte';
+      }
     }
 
-    function resetToStart() {
+    function resetToHome() {
+      currentMode = null;
       roundActive = false;
       roundQuestions = [];
       currentIndex = 0;
@@ -345,10 +354,11 @@
       introEl.classList.remove('hidden');
       quizAreaEl.classList.add('hidden');
       resultBoxEl.style.display = 'none';
-      lskEl.textContent = '15-Fragen-Modus';
-      counterEl.textContent = `0 / ${QUESTIONS_PER_ROUND}`;
-      pointsEl.textContent = `0 / ${MAX_POINTS} Punkte`;
-      scoreEl.textContent = 'Noch nicht gestartet';
+      modePillEl.textContent = 'Start';
+      lskEl.textContent = 'Alle Kapitel';
+      counterEl.textContent = '0 / 0';
+      pointsEl.textContent = '0 Punkte';
+      scoreEl.textContent = 'Modus auswählen';
     }
 
     function escapeHtml(text) {
@@ -363,13 +373,14 @@
     trueBtn.addEventListener('click', () => answer(true));
     falseBtn.addEventListener('click', () => answer(false));
     nextBtn.addEventListener('click', nextQuestion);
-    startBtn.addEventListener('click', startRound);
-    restartBtn.addEventListener('click', startRound);
-    resetBtn.addEventListener('click', resetToStart);
-    filterEl.addEventListener('change', resetToStart);
+    practiceStartBtn.addEventListener('click', startPracticeMode);
+    examStartBtn.addEventListener('click', startExamMode);
+    restartExamBtn.addEventListener('click', startExamMode);
+    backBtn.addEventListener('click', resetToHome);
+    homeBtn.addEventListener('click', resetToHome);
 
-    setupFilter();
-    resetToStart();
+    setupPracticeFilter();
+    resetToHome();
   </script>
 </body>
 </html>
